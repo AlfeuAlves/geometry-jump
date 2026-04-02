@@ -42,8 +42,9 @@ async function registerUser(username, password) {
   if (!password || password.length < 3)  return 'Senha deve ter ao menos 3 caracteres.';
   const { error } = await db.from('users').insert({ username, password });
   if (error) {
+    console.error('Supabase register error:', error);
     if (error.code === '23505') return 'Esse nome já está em uso.';
-    return 'Erro ao registrar. Tente novamente.';
+    return `Erro: ${error.message}`;
   }
   return null;
 }
