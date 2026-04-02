@@ -32,40 +32,41 @@ body {
 /* Controles mobile */
 #mobile-controls {
   display: none;
-  position: absolute;
-  right: 12px;
+  position: fixed;
+  right: 16px;
   top: 50%;
   transform: translateY(-50%);
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  z-index: 50;
-  pointer-events: none;
+  gap: 14px;
+  z-index: 9000;
 }
 .mobile-btn {
-  pointer-events: all;
-  width: 62px;
-  height: 62px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  background: rgba(162,89,255,0.22);
-  border: 2px solid rgba(162,89,255,0.6);
+  background: rgba(162,89,255,0.25);
+  border: 2px solid rgba(162,89,255,0.7);
   color: #fff;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 0 12px rgba(162,89,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 14px rgba(162,89,255,0.4);
   transition: background 0.1s, transform 0.1s;
 }
-.mobile-btn:active { background: rgba(162,89,255,0.55); transform: scale(0.92); }
+.mobile-btn:active { background: rgba(162,89,255,0.6); transform: scale(0.92); }
 .mobile-jump {
-  width: 74px; height: 74px;
-  font-size: 1.7rem;
-  background: rgba(0,207,255,0.22);
-  border-color: rgba(0,207,255,0.7);
-  box-shadow: 0 0 16px rgba(0,207,255,0.3);
+  width: 76px;
+  height: 76px;
+  font-size: 1.8rem;
+  background: rgba(0,207,255,0.25);
+  border-color: rgba(0,207,255,0.8);
+  box-shadow: 0 0 18px rgba(0,207,255,0.4);
 }
 @media (pointer: coarse) {
   #mobile-controls { display: flex; }

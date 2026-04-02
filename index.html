@@ -8,6 +8,12 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- Controles mobile (fora do container para não ser afetado pelo scale) -->
+  <div id="mobile-controls">
+    <button id="mobile-up"   class="mobile-btn mobile-jump">▲</button>
+    <button id="mobile-down" class="mobile-btn">▼</button>
+  </div>
+
   <!-- Tela de entrada fullscreen -->
   <div id="fs-gate">
     <div id="fs-gate-box">
@@ -136,11 +142,6 @@
         </div>
       </div>
       <canvas id="game-canvas"></canvas>
-      <!-- Controles mobile -->
-      <div id="mobile-controls">
-        <button id="mobile-up"    class="mobile-btn mobile-jump">▲</button>
-        <button id="mobile-down"  class="mobile-btn">▼</button>
-      </div>
     </div>
 
     <!-- GAME OVER -->
