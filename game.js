@@ -1339,6 +1339,48 @@ document.getElementById('btn-menu-from-win').addEventListener('click', goMenu);
 updateStarDisplay();
 
 // ============================================================
+//  ESCALA RESPONSIVA MOBILE
+// ============================================================
+function fitGame() {
+  const container = document.getElementById('game-container');
+  const scaleX = window.innerWidth  / 900;
+  const scaleY = window.innerHeight / 506;
+  const scale  = Math.min(scaleX, scaleY, 1);
+  container.style.transform = `scale(${scale})`;
+  // Centraliza manualmente com margem negativa
+  const marginX = (900 * scale - 900) / 2;
+  const marginY = (506 * scale - 506) / 2;
+  container.style.marginLeft = marginX + 'px';
+  container.style.marginTop  = marginY + 'px';
+}
+fitGame();
+window.addEventListener('resize', fitGame);
+screen.orientation && screen.orientation.addEventListener('change', fitGame);
+
+// ============================================================
+//  CONTROLES MOBILE
+// ============================================================
+function setupMobileControls() {
+  function pressJump()  { if (!keys['jump']) { keys['jump'] = true; if (state === 'playing') tryJump(); if (state === 'dead') retryLevel(); } }
+  function releaseJump(){ keys['jump'] = false; }
+
+  const btnUp    = document.getElementById('mobile-up');
+  const btnLeft  = document.getElementById('mobile-left');
+  const btnRight = document.getElementById('mobile-right');
+
+  btnUp.addEventListener('touchstart',  e => { e.preventDefault(); pressJump(); },   { passive: false });
+  btnUp.addEventListener('touchend',    e => { e.preventDefault(); releaseJump(); },  { passive: false });
+  btnUp.addEventListener('mousedown',   () => pressJump());
+  btnUp.addEventListener('mouseup',     () => releaseJump());
+
+  btnLeft.addEventListener('touchstart',  e => { e.preventDefault(); keys['left']  = true;  }, { passive: false });
+  btnLeft.addEventListener('touchend',    e => { e.preventDefault(); keys['left']  = false; }, { passive: false });
+  btnRight.addEventListener('touchstart', e => { e.preventDefault(); keys['right'] = true;  }, { passive: false });
+  btnRight.addEventListener('touchend',   e => { e.preventDefault(); keys['right'] = false; }, { passive: false });
+}
+setupMobileControls();
+
+// ============================================================
 //  FULLSCREEN + LANDSCAPE
 // ============================================================
 function requestFullscreenLandscape() {

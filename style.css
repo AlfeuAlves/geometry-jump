@@ -8,6 +8,7 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  min-height: 100dvh;
   font-family: 'Orbitron', monospace;
   overflow: hidden;
 }
@@ -17,6 +18,56 @@ body {
   width: 900px;
   height: 506px;
   overflow: hidden;
+  transform-origin: center center;
+}
+
+/* ===== RESPONSIVO MOBILE ===== */
+@media (max-width: 960px) {
+  body { align-items: center; justify-content: center; padding: 0; }
+  #game-container {
+    transform: scale(var(--game-scale, 1));
+  }
+}
+
+/* Controles mobile */
+#mobile-controls {
+  display: none;
+  position: absolute;
+  bottom: 14px;
+  left: 0; right: 0;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  z-index: 50;
+  pointer-events: none;
+}
+.mobile-btn {
+  pointer-events: all;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(162,89,255,0.22);
+  border: 2px solid rgba(162,89,255,0.6);
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 12px rgba(162,89,255,0.3);
+  transition: background 0.1s, transform 0.1s;
+}
+.mobile-btn:active { background: rgba(162,89,255,0.55); transform: scale(0.92); }
+.mobile-jump {
+  width: 76px; height: 76px;
+  font-size: 1.8rem;
+  background: rgba(0,207,255,0.22);
+  border-color: rgba(0,207,255,0.7);
+  box-shadow: 0 0 16px rgba(0,207,255,0.3);
+}
+@media (pointer: coarse) {
+  #mobile-controls { display: flex; }
 }
 
 /* ===== FULLSCREEN BUTTON ===== */
