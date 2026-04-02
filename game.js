@@ -1391,20 +1391,21 @@ function requestFullscreenLandscape() {
       if (screen.orientation && screen.orientation.lock) {
         screen.orientation.lock('landscape').catch(() => {});
       }
-    }).catch(() => {});
+      fitGame();
+    }).catch(() => { fitGame(); });
   }
 }
 
-// Tenta ao primeiro clique/toque do usuário (exigência dos browsers)
-let fullscreenRequested = false;
-document.addEventListener('pointerdown', () => {
-  if (!fullscreenRequested) {
-    fullscreenRequested = true;
-    requestFullscreenLandscape();
-  }
-}, { once: false });
+// Tela gate — o usuário clica antes de tudo para acionar fullscreen
+const fsGate    = document.getElementById('fs-gate');
+const fsGateBtn = document.getElementById('fs-gate-btn');
+fsGateBtn.addEventListener('click', () => {
+  requestFullscreenLandscape();
+  fsGate.classList.add('hidden');
+  fitGame();
+});
 
-// Botão de tela cheia flutuante
+// Botão flutuante para alternar fullscreen durante o jogo
 const fsBtn = document.createElement('button');
 fsBtn.id = 'btn-fullscreen';
 fsBtn.title = 'Tela cheia';

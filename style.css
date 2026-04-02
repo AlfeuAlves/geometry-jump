@@ -70,6 +70,62 @@ body {
   #mobile-controls { display: flex; }
 }
 
+/* ===== TELA FULLSCREEN GATE ===== */
+#fs-gate {
+  position: fixed;
+  inset: 0;
+  background: #0a0a0f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+#fs-gate.hidden { display: none; }
+#fs-gate-box {
+  text-align: center;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+#fs-gate-icon {
+  font-size: 4rem;
+  animation: pulse-fs 1.4s ease-in-out infinite;
+}
+@keyframes pulse-fs {
+  0%,100% { transform: scale(1);   opacity: 1; }
+  50%      { transform: scale(1.2); opacity: 0.7; }
+}
+#fs-gate-box h2 {
+  font-family: 'Orbitron', monospace;
+  font-size: 2rem;
+  background: linear-gradient(90deg, #a259ff, #00cfff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+#fs-gate-box p {
+  font-size: 1.1rem;
+  color: #aaa;
+  line-height: 1.6;
+}
+#fs-gate-box strong { color: #fff; }
+#fs-gate-btn {
+  margin-top: 8px;
+  padding: 16px 48px;
+  font-family: 'Orbitron', monospace;
+  font-size: 1.2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #a259ff, #00cfff);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 0 24px rgba(162,89,255,0.5);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+#fs-gate-btn:active { transform: scale(0.95); }
+
 /* ===== FULLSCREEN BUTTON ===== */
 #btn-fullscreen {
   position: absolute;
