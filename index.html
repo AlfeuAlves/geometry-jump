@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Geometry Jump</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="game-container">
+
+    <!-- LOGIN / REGISTRO -->
+    <div id="login-screen" class="screen active">
+      <div class="menu-bg"></div>
+      <h1 class="title">GEOMETRY<br/><span>JUMP</span></h1>
+      <div class="login-box">
+        <div id="login-error" class="login-error"></div>
+        <input type="text"     id="login-username" class="login-input" placeholder="Nome de usuário" maxlength="20" autocomplete="off" />
+        <input type="password" id="login-password" class="login-input" placeholder="Senha" maxlength="30" autocomplete="off" />
+        <div class="login-btns">
+          <button class="btn btn-play"   id="btn-login">▶ ENTRAR</button>
+          <button class="btn btn-levels" id="btn-register">+ REGISTRAR</button>
+        </div>
+        <p class="login-hint">Novo? Clique em REGISTRAR para criar sua conta.</p>
+      </div>
+    </div>
+
+    <!-- MENU PRINCIPAL -->
+    <div id="menu-screen" class="screen">
+      <div class="menu-bg"></div>
+      <div id="menu-user-badge"></div>
+      <h1 class="title">GEOMETRY<br/><span>JUMP</span></h1>
+      <div class="menu-buttons">
+        <button class="btn btn-play"    id="btn-play">▶ JOGAR</button>
+        <button class="btn btn-levels"  id="btn-levels">☰ NÍVEIS</button>
+        <button class="btn btn-ranking" id="btn-ranking">🏆 RANKING</button>
+      </div>
+      <div class="menu-footer">
+        <button class="btn btn-logout" id="btn-logout">Sair da conta</button>
+        <p class="controls-hint-inline">↑ / ESPAÇO — Pular &nbsp;|&nbsp; ↑↑ — Pulo duplo &nbsp;|&nbsp; R — Reiniciar</p>
+      </div>
+    </div>
+
+    <!-- SELEÇÃO DE NÍVEL -->
+    <div id="level-select-screen" class="screen">
+      <h2 class="screen-title">SELECIONAR NÍVEL</h2>
+      <div class="level-cards">
+        <div class="level-card" data-level="1">
+          <div class="level-icon">⬛</div>
+          <div class="level-name">NÍVEL 1</div>
+          <div class="level-sub">Iniciante</div>
+          <div class="level-stars" id="stars-1">☆☆☆</div>
+        </div>
+        <div class="level-card" data-level="2">
+          <div class="level-icon">🔥</div>
+          <div class="level-name">NÍVEL 2</div>
+          <div class="level-sub">Intermediário</div>
+          <div class="level-stars" id="stars-2">☆☆☆</div>
+        </div>
+        <div class="level-card" data-level="3">
+          <div class="level-icon">💀</div>
+          <div class="level-name">NÍVEL 3</div>
+          <div class="level-sub">Difícil</div>
+          <div class="level-stars" id="stars-3">☆☆☆</div>
+        </div>
+        <div class="level-card" data-level="4">
+          <div class="level-icon">⚡</div>
+          <div class="level-name">NÍVEL 4</div>
+          <div class="level-sub">Extremo</div>
+          <div class="level-stars" id="stars-4">☆☆☆</div>
+        </div>
+        <div class="level-card" data-level="5">
+          <div class="level-icon">🌀</div>
+          <div class="level-name">NÍVEL 5</div>
+          <div class="level-sub">Insano</div>
+          <div class="level-stars" id="stars-5">☆☆☆</div>
+        </div>
+        <div class="level-card" data-level="6">
+          <div class="level-icon">🌟</div>
+          <div class="level-name">2.2</div>
+          <div class="level-sub">Lendário</div>
+          <div class="level-stars" id="stars-6">☆☆☆</div>
+        </div>
+      </div>
+      <button class="btn btn-back" id="btn-back-menu">← VOLTAR</button>
+    </div>
+
+    <!-- RANKING -->
+    <div id="ranking-screen" class="screen">
+      <h2 class="screen-title">🏆 RANKING</h2>
+      <div id="ranking-table-wrap">
+        <table id="ranking-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Jogador</th>
+              <th>⭐ Total</th>
+              <th>Níveis</th>
+              <th>Tentativas</th>
+            </tr>
+          </thead>
+          <tbody id="ranking-body"></tbody>
+        </table>
+      </div>
+      <button class="btn btn-back" id="btn-back-from-ranking">← VOLTAR</button>
+    </div>
+
+    <!-- JOGO -->
+    <div id="game-screen" class="screen">
+      <div id="hud">
+        <div id="hud-left">
+          <span id="level-label">NÍVEL 1</span>
+        </div>
+        <div id="hud-center">
+          <div id="progress-bar-bg">
+            <div id="progress-bar-fill"></div>
+            <span id="progress-text">0%</span>
+          </div>
+        </div>
+        <div id="hud-right">
+          <span id="lives-label">❤️❤️❤️</span>
+        </div>
+      </div>
+      <canvas id="game-canvas"></canvas>
+    </div>
+
+    <!-- GAME OVER -->
+    <div id="death-screen" class="screen overlay">
+      <div class="overlay-box death-box">
+        <div class="death-icon">💀</div>
+        <h2>GAME OVER</h2>
+        <p>Suas vidas acabaram!</p>
+        <button class="btn btn-retry"      id="btn-retry">↺ JOGAR NOVAMENTE</button>
+        <button class="btn btn-menu-small" id="btn-menu-from-death">⌂ MENU</button>
+      </div>
+    </div>
+
+    <!-- VITÓRIA -->
+    <div id="win-screen" class="screen overlay">
+      <div class="overlay-box win-box">
+        <div class="win-icon">🏆</div>
+        <h2>NÍVEL COMPLETO!</h2>
+        <div id="win-stars">★★★</div>
+        <p id="win-attempts"></p>
+        <button class="btn btn-next"       id="btn-next-level">▶ PRÓXIMO NÍVEL</button>
+        <button class="btn btn-menu-small" id="btn-menu-from-win">⌂ MENU</button>
+      </div>
+    </div>
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="game.js"></script>
+</body>
+</html>
