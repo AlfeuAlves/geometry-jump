@@ -2,6 +2,92 @@
 //  GEOMETRY JUMP — game.js
 // ============================================================
 
+// ============================================================
+//  AUDIO ENGINE (Web Audio API — sem arquivos externos)
+// ============================================================
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+
+function getAudio() {
+  if (!audioCtx) audioCtx = new AudioCtx();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function playTone({ freq = 440, freq2, type = 'square', vol = 0.18, attack = 0.01, decay = 0.12, duration = 0.15 }) {
+  try {
+    const ac  = getAudio();
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
+    osc.connect(gain);
+    gain.connect(ac.destination);
+
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ac.currentTime);
+    if (freq2) osc.frequency.linearRampToValueAtTime(freq2, ac.currentTime + duration);
+
+    gain.gain.setValueAtTime(0, ac.currentTime);
+    gain.gain.linearRampToValueAtTime(vol, ac.currentTime + attack);
+    gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + attack + decay);
+
+    osc.start(ac.currentTime);
+    osc.stop(ac.currentTime + duration + 0.05);
+  } catch(e) {}
+}
+
+function playNoise({ vol = 0.15, duration = 0.2 }) {
+  try {
+    const ac     = getAudio();
+    const buf    = ac.createBuffer(1, ac.sampleRate * duration, ac.sampleRate);
+    const data   = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    const src  = ac.createBufferSource();
+    const gain = ac.createGain();
+    const filt = ac.createBiquadFilter();
+    src.buffer = buf;
+    filt.type = 'lowpass';
+    filt.frequency.value = 400;
+    src.connect(filt); filt.connect(gain); gain.connect(ac.destination);
+    gain.gain.setValueAtTime(vol, ac.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + duration);
+    src.start(); src.stop(ac.currentTime + duration);
+  } catch(e) {}
+}
+
+const SFX = {
+  jump() {
+    playTone({ freq: 300, freq2: 520, type: 'square', vol: 0.15, attack: 0.005, decay: 0.1, duration: 0.12 });
+  },
+  doubleJump() {
+    playTone({ freq: 500, freq2: 780, type: 'square', vol: 0.13, attack: 0.005, decay: 0.09, duration: 0.1 });
+    setTimeout(() => playTone({ freq: 650, freq2: 900, type: 'sine', vol: 0.1, attack: 0.005, decay: 0.08, duration: 0.08 }), 30);
+  },
+  death() {
+    playTone({ freq: 320, freq2: 80,  type: 'sawtooth', vol: 0.2, attack: 0.01, decay: 0.25, duration: 0.3 });
+    setTimeout(() => playNoise({ vol: 0.12, duration: 0.25 }), 60);
+  },
+  win() {
+    const notes = [523, 659, 784, 1047];
+    notes.forEach((f, i) => {
+      setTimeout(() => playTone({ freq: f, type: 'sine', vol: 0.18, attack: 0.01, decay: 0.15, duration: 0.18 }), i * 110);
+    });
+  },
+  powerStar() {
+    [800, 1000, 1300, 1600].forEach((f, i) => {
+      setTimeout(() => playTone({ freq: f, type: 'sine', vol: 0.14, attack: 0.005, decay: 0.08, duration: 0.1 }), i * 55);
+    });
+  },
+  invincibleHit() {
+    playTone({ freq: 900, freq2: 900, type: 'sine', vol: 0.12, attack: 0.005, decay: 0.06, duration: 0.08 });
+  },
+  click() {
+    playTone({ freq: 480, type: 'sine', vol: 0.1, attack: 0.005, decay: 0.05, duration: 0.06 });
+  },
+  loseLife() {
+    playTone({ freq: 250, freq2: 120, type: 'sawtooth', vol: 0.18, attack: 0.01, decay: 0.2, duration: 0.25 });
+  },
+};
+
 // ---------- Canvas setup ----------
 const canvas = document.getElementById('game-canvas');
 const ctx    = canvas.getContext('2d');
@@ -450,6 +536,7 @@ document.addEventListener('keyup', e => {
 function tryJump() {
   if (player.jumpsLeft > 0) {
     player.vy = JUMP_FORCE;
+    player.jumpsLeft === 2 ? SFX.jump() : SFX.doubleJump();
     player.jumpsLeft--;
     spawnJumpParticles();
   }
@@ -1055,6 +1142,7 @@ function updatePhysics() {
         player.invincible = true;
         player.invincibleTimer = INVINCIBLE_FRAMES;
         spawnStarCollectParticles(starCX, starCY);
+        SFX.powerStar();
       }
     }
   }
@@ -1083,14 +1171,16 @@ function updatePhysics() {
 // ============================================================
 function killPlayer() {
   if (state !== 'playing') return;
-  if (player.invincible) return;   // imune!
+  if (player.invincible) { SFX.invincibleHit(); return; }
   state = 'dead';
+  SFX.death();
   spawnDeathParticles();
   lives--;
   updateHUD();
   if (lives <= 0) {
     setTimeout(() => showScreen('death-screen'), 700);
   } else {
+    SFX.loseLife();
     setTimeout(() => {
       attempts++;
       state = 'playing';
@@ -1107,6 +1197,7 @@ function killPlayer() {
 function winLevel() {
   if (state !== 'playing') return;
   state = 'win';
+  SFX.win();
   const s = attempts <= 1 ? 3 : attempts <= 5 ? 2 : 1;
   stars[currentLevel] = Math.max(stars[currentLevel] || 0, s);
   saveUserScore(currentLevel, s, attempts);
@@ -1303,12 +1394,12 @@ document.getElementById('btn-register').addEventListener('click', async () => {
 });
 
 // --- Menu ---
-document.getElementById('btn-play').addEventListener('click', () => startLevel(1));
-document.getElementById('btn-levels').addEventListener('click', () => {
+document.getElementById('btn-play').addEventListener('click', () => { SFX.click(); startLevel(1); });
+document.getElementById('btn-levels').addEventListener('click', () => { SFX.click();
   updateStarDisplay();
   showScreen('level-select-screen');
 });
-document.getElementById('btn-ranking').addEventListener('click', showRanking);
+document.getElementById('btn-ranking').addEventListener('click', () => { SFX.click(); showRanking(); });
 document.getElementById('btn-logout').addEventListener('click', () => {
   currentUser = null;
   stars = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
@@ -1327,7 +1418,7 @@ document.querySelectorAll('.level-card').forEach(card => {
   });
 });
 
-document.getElementById('btn-retry').addEventListener('click', retryLevel);
+document.getElementById('btn-retry').addEventListener('click', () => { SFX.click(); retryLevel(); });
 document.getElementById('btn-menu-from-death').addEventListener('click', goMenu);
 document.getElementById('btn-next-level').addEventListener('click', () => {
   if (currentLevel < 6) startLevel(currentLevel + 1);
