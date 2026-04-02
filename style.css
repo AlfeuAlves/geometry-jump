@@ -99,6 +99,19 @@ body {
 #login-screen {
   background: linear-gradient(135deg, #0d0d2b 0%, #1a0033 50%, #0d1a33 100%);
 }
+.dono-foto-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0 16px;
+}
+.dono-foto {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #a259ff;
+  box-shadow: 0 0 18px #a259ff, 0 0 6px #fff2;
+}
 .login-box {
   display: flex;
   flex-direction: column;
