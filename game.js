@@ -9,16 +9,29 @@ const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let audioCtx = null;
 
 function initAudio() {
-  if (!audioCtx) {
-    audioCtx = new AudioCtx();
-  }
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
+  if (!audioCtx) audioCtx = new AudioCtx();
+
+  // Toca buffer silencioso — truque obrigatório para iOS/Android desbloquear áudio
+  const buf  = audioCtx.createBuffer(1, 1, 22050);
+  const src  = audioCtx.createBufferSource();
+  src.buffer = buf;
+  src.connect(audioCtx.destination);
+  src.start(0);
+
+  audioCtx.resume().then(() => {
+    // Confirma desbloqueio tocando tom quase inaudível
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + 0.01);
+  });
 }
 
 function playTone({ freq = 440, freq2, type = 'square', vol = 0.18, attack = 0.01, decay = 0.12, duration = 0.15 }) {
-  if (!audioCtx || audioCtx.state === 'suspended') return;
+  if (!audioCtx) return;
   try {
     const ac   = audioCtx;
     const osc  = ac.createOscillator();
@@ -40,7 +53,7 @@ function playTone({ freq = 440, freq2, type = 'square', vol = 0.18, attack = 0.0
 }
 
 function playNoise({ vol = 0.15, duration = 0.2 }) {
-  if (!audioCtx || audioCtx.state === 'suspended') return;
+  if (!audioCtx) return;
   try {
     const ac   = audioCtx;
     const buf  = ac.createBuffer(1, ac.sampleRate * duration, ac.sampleRate);
