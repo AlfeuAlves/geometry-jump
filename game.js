@@ -8,16 +8,20 @@
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let audioCtx = null;
 
-function getAudio() {
-  if (!audioCtx) audioCtx = new AudioCtx();
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  return audioCtx;
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new AudioCtx();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
 }
 
 function playTone({ freq = 440, freq2, type = 'square', vol = 0.18, attack = 0.01, decay = 0.12, duration = 0.15 }) {
+  if (!audioCtx || audioCtx.state === 'suspended') return;
   try {
-    const ac  = getAudio();
-    const osc = ac.createOscillator();
+    const ac   = audioCtx;
+    const osc  = ac.createOscillator();
     const gain = ac.createGain();
     osc.connect(gain);
     gain.connect(ac.destination);
@@ -26,9 +30,9 @@ function playTone({ freq = 440, freq2, type = 'square', vol = 0.18, attack = 0.0
     osc.frequency.setValueAtTime(freq, ac.currentTime);
     if (freq2) osc.frequency.linearRampToValueAtTime(freq2, ac.currentTime + duration);
 
-    gain.gain.setValueAtTime(0, ac.currentTime);
+    gain.gain.setValueAtTime(0.0001, ac.currentTime);
     gain.gain.linearRampToValueAtTime(vol, ac.currentTime + attack);
-    gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + attack + decay);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + attack + decay);
 
     osc.start(ac.currentTime);
     osc.stop(ac.currentTime + duration + 0.05);
@@ -36,10 +40,11 @@ function playTone({ freq = 440, freq2, type = 'square', vol = 0.18, attack = 0.0
 }
 
 function playNoise({ vol = 0.15, duration = 0.2 }) {
+  if (!audioCtx || audioCtx.state === 'suspended') return;
   try {
-    const ac     = getAudio();
-    const buf    = ac.createBuffer(1, ac.sampleRate * duration, ac.sampleRate);
-    const data   = buf.getChannelData(0);
+    const ac   = audioCtx;
+    const buf  = ac.createBuffer(1, ac.sampleRate * duration, ac.sampleRate);
+    const data = buf.getChannelData(0);
     for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
     const src  = ac.createBufferSource();
     const gain = ac.createGain();
@@ -49,8 +54,9 @@ function playNoise({ vol = 0.15, duration = 0.2 }) {
     filt.frequency.value = 400;
     src.connect(filt); filt.connect(gain); gain.connect(ac.destination);
     gain.gain.setValueAtTime(vol, ac.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + duration);
-    src.start(); src.stop(ac.currentTime + duration);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + duration);
+    src.start();
+    src.stop(ac.currentTime + duration);
   } catch(e) {}
 }
 
@@ -1491,6 +1497,8 @@ function requestFullscreenLandscape() {
 const fsGate    = document.getElementById('fs-gate');
 const fsGateBtn = document.getElementById('fs-gate-btn');
 fsGateBtn.addEventListener('click', () => {
+  initAudio();           // inicializa áudio no primeiro gesto do usuário
+  SFX.click();
   requestFullscreenLandscape();
   fsGate.classList.add('hidden');
   fitGame();
