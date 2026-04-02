@@ -1337,3 +1337,42 @@ document.getElementById('btn-menu-from-win').addEventListener('click', goMenu);
 
 // Init — show login screen
 updateStarDisplay();
+
+// ============================================================
+//  FULLSCREEN + LANDSCAPE
+// ============================================================
+function requestFullscreenLandscape() {
+  const el = document.documentElement;
+  const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+  if (req) {
+    req.call(el).then(() => {
+      if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('landscape').catch(() => {});
+      }
+    }).catch(() => {});
+  }
+}
+
+// Tenta ao primeiro clique/toque do usuário (exigência dos browsers)
+let fullscreenRequested = false;
+document.addEventListener('pointerdown', () => {
+  if (!fullscreenRequested) {
+    fullscreenRequested = true;
+    requestFullscreenLandscape();
+  }
+}, { once: false });
+
+// Botão de tela cheia flutuante
+const fsBtn = document.createElement('button');
+fsBtn.id = 'btn-fullscreen';
+fsBtn.title = 'Tela cheia';
+fsBtn.innerHTML = '⛶';
+fsBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (!document.fullscreenElement) {
+    requestFullscreenLandscape();
+  } else {
+    document.exitFullscreen && document.exitFullscreen();
+  }
+});
+document.getElementById('game-container').appendChild(fsBtn);
