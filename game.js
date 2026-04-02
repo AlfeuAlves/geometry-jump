@@ -28,7 +28,7 @@ let stars = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
 //  SUPABASE CONFIG
 // ============================================================
 const SUPABASE_URL = 'https://mybntjirkqqmniudusp.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15Ym56dGppcmtxcW1uaXVkdXNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMzc0MjEsImV4cCI6MjA5MDcxMzQyMX0.VxAJG8ris3toncIRvlONZ0C4iLgpTWjsTnoL91OhI2c';
+const SUPABASE_KEY = 'sb_publishable_3IyAAwk5-XQ6MTYNyi9Sfg_0cSbv9S3';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ============================================================
